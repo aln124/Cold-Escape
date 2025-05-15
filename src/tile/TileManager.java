@@ -16,7 +16,7 @@ public class TileManager {
     public int mapTileNum[][];
     public TileManager (main.GamePanel gp){
         this.gp = gp;
-        tile = new Tile[62];
+        tile = new Tile[63];
         mapTileNum = new int [gp.maxWorldCol][gp.maxWorldRow];
         getTileImage();
         loadMap();
@@ -57,6 +57,9 @@ public class TileManager {
 
             tile[60] = new Tile();
             tile[60].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/usa.jpg")));
+
+            tile[62] = new Tile();
+            tile[62].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/doorOpen.png")));
 
             tile[57] = new Tile();
             tile[57].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/butoi.png")));
@@ -111,6 +114,7 @@ public class TileManager {
         while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow)
         {
             int tileNum = mapTileNum[worldCol][worldRow];
+
 
             int worldX=worldCol * gp.tileSize;
             int worldY=worldRow * gp.tileSize;

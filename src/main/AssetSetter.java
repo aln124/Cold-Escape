@@ -36,6 +36,36 @@ public class AssetSetter {
                 new int[] {63, 3},
                 new int[] {49, 3}
         );
+
+        List<int[]> path3 = List.of(
+                new int[] {63, 13},
+                new int[] {63, 3},
+                new int[] {49, 3},
+                new int[] {49, 14},
+                new int[] {55, 14},
+                new int[] {55, 13},
+                new int[] {63, 13}
+
+        );
+
+        List<int[]> path4 = List.of(
+                new int[] {101, 17},
+                new int[] {101, 12},
+                new int[] {91, 12},
+                new int[] {91, 17},
+                new int[] {101, 17}
+
+        );
+
+        List<int[]> path5 = List.of(
+                new int[] {36, 11},
+                new int[] {36, 2},
+                new int[] {28, 2},
+                new int[] {28, 11},
+                new int[] {36, 11}
+
+        );
+
         gp.npc[0] = new OrcaNPC(gp, path1);
         gp.npc[0].worldX= gp.tileSize * 21;
         gp.npc[0].worldY= gp.tileSize * 7;
@@ -43,6 +73,18 @@ public class AssetSetter {
         gp.npc[1] = new OrcaNPC(gp, path2);
         gp.npc[1].worldX= gp.tileSize * 49;
         gp.npc[1].worldY= gp.tileSize * 3;
+
+        gp.npc[2] = new OrcaNPC(gp, path3);
+        gp.npc[2].worldX= gp.tileSize * 63;
+        gp.npc[2].worldY= gp.tileSize * 13;
+
+        gp.npc[3] = new OrcaNPC(gp, path4);
+        gp.npc[3].worldX= gp.tileSize * 101;
+        gp.npc[3].worldY= gp.tileSize * 17;
+
+        gp.npc[4] = new OrcaNPC(gp, path5);
+        gp.npc[4].worldX= gp.tileSize * 36;
+        gp.npc[4].worldY= gp.tileSize * 11;
     }
 
     public void setObject(){

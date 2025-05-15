@@ -47,7 +47,24 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity npc[] = new Entity[10];
     public double playTime=0;
     public EventHandler eHandler = new EventHandler(this);
+
     Sound sound = new Sound();
+    //usa
+    class Door {
+        int col, row;
+        boolean soundPlayed;
+
+        Door(int col, int row) {
+            this.col = col;
+            this.row = row;
+            this.soundPlayed = false;
+        }
+    }
+    java.util.List<Door> doors = new java.util.ArrayList<>();
+
+
+
+
 
     public GamePanel(){
         keyH = new main.KeyHandler(this);
@@ -64,7 +81,17 @@ public class GamePanel extends JPanel implements Runnable {
         //gameState = playState;
         assetSetter.setObject();
         assetSetter.setNPC();
-
+        //usile
+        doors.add(new Door(5, 6));
+        doors.add(new Door(8, 16));
+        doors.add(new Door(39, 10));
+        doors.add(new Door(71, 3));
+        doors.add(new Door(71, 16));
+        doors.add(new Door(79, 10));
+        doors.add(new Door(83, 4));
+        doors.add(new Door(104, 17));
+        doors.add(new Door(111, 2));
+        doors.add(new Door(119, 9));
     }
     public void startGameThread(){
         gameThread = new Thread(this);
@@ -110,12 +137,37 @@ public class GamePanel extends JPanel implements Runnable {
                     npc[i].update();
                 }
             }
+            updateDoor();
         }
         if(gameState == pauseState)
         {
 
         }
     }
+    public void updateDoor() {
+        int playerCenterX = player.worldX + tileSize / 2;
+        int playerCenterY = player.worldY + tileSize / 2;
+
+        int playerCol = playerCenterX / tileSize;
+        int playerRow = playerCenterY / tileSize;
+
+        for (Door door : doors) {
+            if (playerCol == door.col && playerRow == door.row) {
+                tileM.mapTileNum[door.col][door.row] = 62;  // ușa deschisă
+                if (!door.soundPlayed) {
+                    playSE(6);
+                    door.soundPlayed = true;
+                }
+            } else {
+                tileM.mapTileNum[door.col][door.row] = 60;  // ușa închisă
+                door.soundPlayed = false;
+            }
+        }
+    }
+
+
+
+
 
 
     public void paintComponent(Graphics g){

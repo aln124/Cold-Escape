@@ -164,11 +164,10 @@ public class Player extends Entity{
                     gp.playSE(4);
                     break;
                 case "DoorLevel":
-                    if((hasKey == 2 && hasChest==1)|| (hasKey==4 && hasChest==2)|| (hasKey == 6 && hasChest == 4) )
-                     {
+//                    if((hasKey == 2 && hasChest==1)|| (hasKey==4 && hasChest==2)|| (hasKey == 6 && hasChest == 4) )
+//                     {
                         gp.obj[i] = null;
-                        gp.playSE(6);
-                    }
+                  //  }
                     break;
                 case "Chest":
 //                    hasChest++;
