@@ -16,7 +16,7 @@ public class TileManager {
     public int mapTileNum[][];
     public TileManager (main.GamePanel gp){
         this.gp = gp;
-        tile = new Tile[63];
+        tile = new Tile[99];
         mapTileNum = new int [gp.maxWorldCol][gp.maxWorldRow];
         getTileImage();
         loadMap();
@@ -72,6 +72,7 @@ public class TileManager {
             tile[59] = new Tile();
             tile[59].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/tiles/flacara.jpg")));
             tile[59].collision=true;
+
         }catch(IOException e){
             e.printStackTrace();
         }

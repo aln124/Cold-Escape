@@ -1,5 +1,6 @@
 package entity;
 
+import Boss_AI.PathFinder;
 import main.GamePanel;
 
 import java.awt.*;
@@ -117,5 +118,87 @@ public class Entity {
         }
 
     }
+    protected int startCol, startRow, goalCol, goalRow;
+    protected boolean onPath = false;
+    protected boolean followPlayer = false;
+
+    public void searchPath(int goalCol, int goalRow) {
+        int startCol = (worldX + solidArea.x) / gp.tileSize;
+        int startRow = (worldY + solidArea.y) / gp.tileSize;
+//        if (Game.debugState && this instanceof Chupacabra) {
+//            SworldYstem.out.println("startCol = " + startCol + ", startRow = " + startRow);
+//        }
+
+        gp.pFinder.setNodes(startCol, startRow, goalCol, goalRow, this);
+        if (gp.pFinder.search()) {
+
+            // Next x and worldY coordinates
+            int nextX = gp.pFinder.pathList.get(0).col * gp.tileSize;
+            int nextY = gp.pFinder.pathList.get(0).row * gp.tileSize;
+
+            // entity position
+            int entLeftX = worldX + solidArea.x;
+            int entRightX = worldX + solidArea.x + solidArea.width;
+            int entTopY = worldY + solidArea.y;
+            int entBottomY = worldY + solidArea.y + solidArea.height;
+
+            if (entTopY > nextY && entLeftX >= nextX && entRightX < nextX + gp.tileSize) {
+                direction = "up";
+            } else
+            if (entTopY < nextY && entLeftX >= nextX && entRightX < nextX + gp.tileSize) {
+                direction = "down";
+            } else
+            if (entTopY >= nextY && entBottomY < nextY + gp.tileSize) {
+                // left or right
+                if (entLeftX > nextX) {
+                    direction = "left";
+                }
+                if (entLeftX < nextX) {
+                    direction = "right";
+                }
+            } else if (entTopY > nextY && entLeftX > nextX) {
+                // up or left
+                direction = "up";
+                gp.check.checkTile(this);
+                gp.check.checkPlayer(this);
+                if (collisionOn) {
+                    direction = "left";
+                }
+            } else if (entTopY > nextY && entLeftX < nextX) {
+                // up or right
+                direction = "up";
+                gp.check.checkTile(this);
+                gp.check.checkPlayer(this);
+                if (collisionOn) {
+                    direction = "right";
+                }
+            } else if (entTopY < nextY && entLeftX > nextX) {
+                // down or left
+                direction = "down";
+                gp.check.checkTile(this);
+                gp.check.checkPlayer(this);
+                if (collisionOn) {
+                    direction = "left";
+                }
+            } else if (entTopY < nextY && entLeftX < nextX) {
+                // down or right
+                direction = "down";
+                gp.check.checkTile(this);
+                gp.check.checkPlayer(this);
+                if (collisionOn) {
+                    direction = "right";
+                }
+            }
+
+            int nextCol = gp.pFinder.pathList.get(0).col;
+            int nextRow = gp.pFinder.pathList.get(0).row;
+
+            if (nextCol == goalCol && nextRow == goalRow) {
+                onPath = !onPath;
+            }
+        }
+    }
+
+
 
 }

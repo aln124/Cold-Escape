@@ -67,6 +67,7 @@ public class Player extends Entity{
         }
     }
     public void update(){
+
         if(keyH.upPressed == true || keyH.downPressed == true ||
                 keyH.leftPressed == true ||keyH.rightPressed == true) {
             if (keyH.upPressed == true) {
@@ -89,6 +90,7 @@ public class Player extends Entity{
             //check object colision
             int objIndex = gp.check.checkObject(this,true);
             PickObject(objIndex);
+
 
             //check NPC colision
             int npcIndex = gp.check.checkEntity(this, gp.npc);
@@ -144,6 +146,16 @@ public class Player extends Entity{
             gp.gameState=gp.deadState;
         }
 
+        int playerTileX = worldX / gp.tileSize;
+        int playerTileY = worldY / gp.tileSize;
+
+        if(playerTileX == 119 && playerTileY == 8)
+        {
+            gp.gameState = gp.endState;
+        }
+
+
+
     }
 
     public void PickObject(int i)
@@ -164,14 +176,19 @@ public class Player extends Entity{
                     gp.playSE(4);
                     break;
                 case "DoorLevel":
-//                    if((hasKey == 2 && hasChest==1)|| (hasKey==4 && hasChest==2)|| (hasKey == 6 && hasChest == 4) )
-//                     {
+                     if((hasKey == 2 && hasChest==1)|| (hasKey==4 && hasChest==2)|| (hasKey == 6 && hasChest == 4) )
+                     {
                         gp.obj[i] = null;
-                  //  }
+                     }
                     break;
                 case "Chest":
 //                    hasChest++;
                     break;
+
+                case "Gratii":
+                    if (!(gp.lever != null && gp.lever.isOpen)) {
+                    takeDamage(1);
+                }
             }
         }
     }
@@ -244,10 +261,16 @@ public class Player extends Entity{
 
                 if (isTouching && gp.obj[i].name.equals("Chest")) {
                     if (gp.obj[i] instanceof object.ObjectChest chest && !chest.isOpen) {
-                        chest.openChest(); // schimbă imaginea și setează isOpen = true
+                        chest.openChest();
                         hasChest++;
                     }
                 }
+                if (isTouching && gp.obj[i].name.equals("Lever")) {
+                    if (gp.obj[i] instanceof object.ObjectLever lever && !lever.isOpen) {
+                        lever.openLever();
+                    }
+                }
+
             }
         }
     }

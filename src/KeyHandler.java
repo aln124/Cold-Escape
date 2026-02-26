@@ -70,10 +70,10 @@ public class KeyHandler implements KeyListener {
                 if(gp.ui.commandNum==0){
                     gp.gameState = gp.playState;
                 }
-                //if(gp.ui.commandNum==1){
-                //     load game
-                //gp.ui.commandNum =0;
-                //}
+                if(gp.ui.commandNum==1){
+                    gp.saveManager.saveGameToDatabase();
+                    gp.ui.commandNum =0;
+                }
                 if(gp.ui.commandNum==2){
                     gp.gameState = gp.titleState;
                     gp.ui.commandNum =0;
@@ -100,10 +100,35 @@ public class KeyHandler implements KeyListener {
                 if(gp.ui.commandNum==0){
                     gp.gameState = gp.playState;
                 }
-                //if(gp.ui.commandNum==1){
-                //     load game
-                //}
+                if(gp.ui.commandNum==1){
+                    gp.saveManager.loadGameFromDatabase();
+                    gp.gameState = gp.playState;
+                }
                 if(gp.ui.commandNum==2){
+                    System.exit(0);
+                }
+            }
+        }
+        //end state
+        if(gp.gameState == gp.endState){
+            if(code == KeyEvent.VK_W){
+                gp.playSE(1);
+                if(gp.ui.commandNum>0) {
+                    gp.ui.commandNum--;
+                }
+            }
+            if(code == KeyEvent.VK_S){
+                gp.playSE(1);
+                if(gp.ui.commandNum<1) {
+                    gp.ui.commandNum++;
+                }
+            }
+            if(code == KeyEvent.VK_ENTER){
+                gp.playSE(1);
+                if(gp.ui.commandNum==0){
+                    gp.gameState = gp.titleState;
+                }
+                if(gp.ui.commandNum==1){
                     System.exit(0);
                 }
             }

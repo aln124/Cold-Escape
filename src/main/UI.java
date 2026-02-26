@@ -57,7 +57,10 @@ public class UI {
         else if (gp.gameState == gp.pauseState) {
             drawPauseScreen(g2);
         }
-
+        //end
+        if (gp.gameState == gp.endState) {
+            drawEndScreen(g2);
+        }
         //dead
         if(gp.gameState == gp.deadState)
         {
@@ -97,7 +100,13 @@ public class UI {
             int minute = (int) playTime / 60;
             int secunde = (int) playTime % 60;
             String timeFormatted = String.format("%02d:%02d", minute, secunde);
-            g2.drawString(timeFormatted, gp.tileSize * 15 +35, 30);
+            g2.drawString(timeFormatted, gp.tileSize * 15 +25, 30);
+
+            int playTimeInSeconds = (int) playTime;
+            int score = +gp.player.hasKey*100 + gp.player.hasCoins*20 - playTimeInSeconds + gp.player.hasChest*50;
+            String scoreText = "Scor: " + score;
+            g2.drawString(scoreText, gp.tileSize * 15 , 60);
+
         }
     }
 
@@ -143,6 +152,70 @@ public class UI {
         if (commandNum == 1) {
             g2.drawString(">", x - gp.tileSize - gp.tileSize, y);
         }
+
+
+    }
+
+    public void  drawEndScreen(Graphics2D g2){
+        g2.setColor(new Color(76, 0, 153));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        Font titleFont = g2.getFont().deriveFont(Font.BOLD, 50f);
+        g2.setFont(titleFont);
+
+        String text = "YOU ESCAPED";
+        int x = getXforCenteredText(text, g2), y = gp.tileSize * 3 - 30;
+
+        g2.setColor(Color.black);
+        g2.drawString(text, x + 4, y + 4);
+
+        g2.setColor(Color.cyan);
+        g2.drawString(text, x, y);
+
+        // new game + leave
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40f));
+
+        text = "menu";
+        x = getXforCenteredText(text, g2);
+        y += gp.tileSize * 4 + 120;
+        g2.setColor(Color.black);
+        g2.drawString(text, x + 4, y + 4);
+        g2.setColor(Color.gray);
+        g2.drawString(text, x, y);
+        g2.setColor(Color.cyan);
+        if (commandNum == 0) {
+            g2.drawString(">", x - gp.tileSize - gp.tileSize, y);
+        }
+
+        text = "leave";
+        x = getXforCenteredText(text, g2);
+        y += gp.tileSize+30;
+        g2.setColor(Color.black);
+        g2.drawString(text, x + 4, y + 4);
+        g2.setColor(Color.gray);
+        g2.drawString(text, x, y);
+        g2.setColor(Color.cyan);
+        if (commandNum == 1) {
+            g2.drawString(">", x - gp.tileSize - gp.tileSize, y);
+        }
+
+        int totalSeconds = (int) gp.playTime;
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        String timeFormatted = String.format("Time: %02d:%02d", minutes, seconds);
+
+        int score = gp.player.hasKey * 100 + gp.player.hasCoins * 20 - totalSeconds + gp.player.hasChest * 50;
+        String scoreText = "Score: " + score;
+
+        g2.setFont(new Font("Arial", Font.PLAIN, 30));
+        g2.setColor(Color.cyan);
+        int xTime = gp.screenWidth / 2 - 70;
+        int yTime = gp.tileSize * 3 + 80;
+        int xScore = gp.screenWidth / 2 - 70;
+        int yScore = yTime + 40;
+        g2.drawString(timeFormatted, xTime, yTime);
+        g2.drawString(scoreText, xScore, yScore);
+
 
 
     }

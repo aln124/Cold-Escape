@@ -1,7 +1,11 @@
 package main;
+import Boss_AI.PathFinder;
+import Enviroment.EnviromentManager;
 import entity.Entity;
 import entity.Player;
+import object.ObjectSpike;
 import object.SuperObject;
+
 import tile.TileManager;
 
 import javax.swing.JPanel;
@@ -31,22 +35,42 @@ public class GamePanel extends JPanel implements Runnable {
     public final int playState = 1;
     public final int pauseState = 2;
     public final int deadState = 3 ;
+    public final int endState = 4;
     //
-
+    public GameSaveManager saveManager;
     //FPS
     int FPS = 60;
 
     TileManager tileM = new TileManager(this);
     public UI ui = new UI(this);
     public main.KeyHandler keyH;
+
+    EnviromentManager eManager= new EnviromentManager(this);
+
     Thread gameThread;
     public ColisionCheck check=new ColisionCheck(this);
     public Player player = new Player(this, keyH);
-    public SuperObject obj[] = new SuperObject[30];
+    public SuperObject obj[] = new SuperObject[333];
     public AssetSetter assetSetter = new AssetSetter(this);
     public Entity npc[] = new Entity[10];
+    public PathFinder pFinder = new PathFinder(maxWorldCol,maxWorldRow, this);
     public double playTime=0;
     public EventHandler eHandler = new EventHandler(this);
+    public object.ObjectLever lever;
+
+
+
+    //tepi
+    long spikeToggleTimer = System.currentTimeMillis();
+    boolean spikeRaisedVisible = false;
+    final long spikeOnDuration = 2000;  // 2 secunde ON
+    final long spikeOffDuration = 3000; // 3 secunde OFF
+    final long spikeCycleDuration = spikeOnDuration + spikeOffDuration;
+
+
+    public TileManager getTileManager() {
+        return tileM;
+    }
 
     Sound sound = new Sound();
     //usa
@@ -69,7 +93,9 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel(){
         keyH = new main.KeyHandler(this);
         player = new Player(this, keyH);
+        saveManager = new GameSaveManager(this);
         UI ui;
+
         this.setPreferredSize(new Dimension(screenWidth,screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
@@ -78,9 +104,16 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void setupGame(){
+        playMusic(0);
         //gameState = playState;
         assetSetter.setObject();
+        if (obj[200] instanceof object.ObjectLever) {
+            lever = (object.ObjectLever) obj[200];
+        }
+        eManager.setup();
+
         assetSetter.setNPC();
+        assetSetter.setBoss();
         //usile
         doors.add(new Door(5, 6));
         doors.add(new Door(8, 16));
@@ -122,28 +155,66 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void update()
-    {
+    public void update() {
         if(gameState == playState) {
             //timer
             playTime += 1.0 / 60.0;
             //PLAYER
             player.update();
-            //NPC
-            for (int i=0; i < npc.length; i++)
-            {
-                if(npc[i] != null)
+
+            // coleziune - spike ridicat
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null && obj[i] instanceof ObjectSpike spike)
                 {
+                    if (spike.isSpikeRaised())
+                    {  // verifică dacă spike-ul este ridicat
+                        Rectangle spikeArea = new Rectangle(
+                                spike.worldX + spike.solidArea.x,
+                                spike.worldY + spike.solidArea.y,
+                                spike.solidArea.width,
+                                spike.solidArea.height
+                        );
+
+                        Rectangle playerArea = new Rectangle(
+                                player.worldX + player.solidArea.x,
+                                player.worldY + player.solidArea.y,
+                                player.solidArea.width,
+                                player.solidArea.height
+                        );
+
+                        if (playerArea.intersects(spikeArea)) {
+                            player.takeDamage(1);
+                        }
+                    }
+                }
+            }
+            //NPC
+            for (int i=0; i < npc.length; i++) {
+                if(npc[i] != null) {
                     npc[i].update();
                 }
             }
-            updateDoor();
-        }
-        if(gameState == pauseState)
-        {
 
+            updateDoor();
+
+            // Toggle spikes on/off
+            long currentTime = System.currentTimeMillis();
+            long elapsed = currentTime - spikeToggleTimer;
+
+            if (elapsed >= spikeCycleDuration) {
+                spikeToggleTimer = currentTime;
+                spikeRaisedVisible = false;
+                removeRaisedSpikes();
+            } else if (elapsed >= spikeOffDuration && !spikeRaisedVisible) {
+                spikeRaisedVisible = true;
+                addRaisedSpikes();
+            }
+        }
+        if(gameState == pauseState) {
+            // nu face nimic in pauza
         }
     }
+
     public void updateDoor() {
         int playerCenterX = player.worldX + tileSize / 2;
         int playerCenterY = player.worldY + tileSize / 2;
@@ -166,6 +237,23 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
+    public void addRaisedSpikes() {
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null && obj[i] instanceof ObjectSpike) {
+                obj[i].collision = true; // tepii sunt activi
+                ((ObjectSpike)obj[i]).setSpikeRaised(true);
+            }
+        }
+    }
+
+    public void removeRaisedSpikes() {
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null && obj[i] instanceof ObjectSpike) {
+                obj[i].collision = false; // tepii nu mai rănesc
+                ((ObjectSpike)obj[i]).setSpikeRaised(false);
+            }
+        }
+    }
 
 
 
@@ -182,6 +270,10 @@ public class GamePanel extends JPanel implements Runnable {
            ui.draw(g2);
         }
         else if (gameState==deadState)
+        {
+            ui.draw(g2);
+        }
+        else if (gameState==endState)
         {
             ui.draw(g2);
         }
@@ -203,6 +295,9 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             //PLAYER
             player.draw(g2);
+
+            //ENVIROMENT
+            eManager.draw(g2);
             //UI
             ui.draw(g2);
         }
@@ -212,6 +307,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void playMusic(int i){
         sound.setFile(i);
+        sound.setVolume(-5.0f);
         sound.play();
         sound.loop();
     }

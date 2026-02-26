@@ -19,7 +19,7 @@ public class OrcaNPC extends Entity{
         this.path=path;
         currentTarget = 0;
         speed = 1;
-        solidArea = new Rectangle(20, 15, 4, 12);
+        solidArea = new Rectangle(8, 16, 16, 16);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         getNPCImage();
@@ -37,12 +37,10 @@ public class OrcaNPC extends Entity{
 
 
         int[] target = path.get(currentTarget);
-        int targetX = target[0] * gp.tileSize;
-        int targetY = target[1] * gp.tileSize;
-
+        int targetX = target[0] * gp.tileSize-8;
+        int targetY = target[1] * gp.tileSize-10;
 
         int tolerance = 2;
-
 
         if (Math.abs(worldX - targetX) > tolerance)
         {
